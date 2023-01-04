@@ -2,7 +2,9 @@
 
 To use the roles inside the playbook, you need to customize some variables in defaults/main.yml. Example:
 ```
-remote_user: ubuntu
-compose_version: v2.12.2
+webserver_ip: 192.168.10.1
+webserver_port: 8080
+domain_name: networkthor.info
+email: admin@networkthor.info
 
 ```

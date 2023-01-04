@@ -1,0 +1,6 @@
+---
+# handlers file for nginx-certbot
+- name: Restart Nginx
+  community.docker.docker_container:
+    name: nginx
+    restart: true

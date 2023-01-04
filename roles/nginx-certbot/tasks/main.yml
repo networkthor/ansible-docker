@@ -1,0 +1,73 @@
+---
+# Tasks file for nginx-certbot
+- name: Create directory for nginx conf
+  ansible.builtin.file:
+    path: /etc/nginx
+    state: directory
+    mode: '0755'
+
+- name: Generate nginx conf files
+  ansible.builtin.template:
+    src: nginx-http.j2
+    dest: "/etc/nginx/{{ domain_name }}.conf"
+    mode: '0644'
+    backup: yes
+
+- name: Create volumes
+  community.docker.docker_volume:
+    name: "{{ item }}"
+  with_items:
+    - certbot-etc
+    - certbot-var
+    - web-root
+
+- name: Deploy nginx container
+  community.docker.docker_container:
+    name: nginx
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    network_mode: default
+    volumes:
+      - web-root:/var/www/html
+      - /etc/nginx/:/etc/nginx/conf.d/:ro
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    restart_policy: always
+
+- name: Deploy certbot container
+  community.docker.docker_container:
+    name: certbot
+    image: certbot/certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    command: "certonly --webroot --webroot-path=/var/www/html --email {{ email }} --agree-tos --no-eff-email --force-renewal -d {{ domain_name }}"
+
+- name: Check certbot container
+  community.docker.docker_container_info:
+    name: certbot
+  register: certbot_info
+
+# Update nginx config file for https
+- name: Generate nginx conf files
+  ansible.builtin.template:
+    src: nginx-https.j2
+    dest: "/etc/nginx/{{ domain_name }}.conf"
+    mode: 0644
+    backup: yes
+  notify:
+    - Restart Nginx
+
+# Add cron job for certificate renew
+- name: Creates a cron file for certificate renew
+  ansible.builtin.cron:
+    name: certificate renew
+    month: "*/2"
+    day: "1"
+    hour: "5"
+    minute: "0"
+    job: "/usr/bin/docker restart certbot && /usr/bin/docker restart nginx"
+  become_user: ubuntu

@@ -1,0 +1,6 @@
+---
+# defaults file for nginx-certbot
+webserver_ip: <<your-webserver-ip>>
+webserver_port: <<your-webserver-port>>
+domain_name: <<your-domain>>
+email: <<your-email>>
