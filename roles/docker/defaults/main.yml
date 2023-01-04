@@ -1,0 +1,5 @@
+---
+# defaults file for docker
+# Defaults file for docker
+remote_user: ubuntu
+compose_version: v2.12.2

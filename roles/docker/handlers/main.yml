@@ -1,0 +1,7 @@
+---
+# handlers file for docker
+# handlers file for docker
+- name: Update apt packages
+  remote_user: "{{ remote_user }}"
+  ansible.builtin.apt:
+    update_cache: yes
