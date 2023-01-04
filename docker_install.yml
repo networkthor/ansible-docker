@@ -1,5 +1,0 @@
-- name: Install Docker and Docker-commpose
-  hosts: my-server
-  remote_user: ubuntu
-  roles:
-    - docker

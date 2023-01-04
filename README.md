@@ -15,23 +15,37 @@
 2.	Configure Ansible inventory file and configuration file ansible.cfg.
 
 
+## Using roles in playbook
+
+To use the roles inside the playbook, you need to add them there:
+```
+- name: Install nginx certbot jenkins
+  hosts: my-server
+  remote_user: ubuntu
+  roles:
+    - docker
+    - nginx-certbot
+
+```
+
+
 ## Deploying with Ansible
 The standard playbook launch command: 
 
 ```
-ansible-playbook docker_install.yml
+ansible-playbook <<playbook_name>>
 
 ```
 Launch command with custom private-key:
 
 ```
-ansible-playbook --private-key <<your-private-key>> docker_install.yml
+ansible-playbook --private-key <<your-private-key>> <<playbook_name>>
 
 ```
 Dry run:
 
 ```
-ansible-playbook -CD docker_install.yml
+ansible-playbook -CD <<playbook_name>>
 
 ```
 
